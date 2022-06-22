@@ -1,0 +1,41 @@
+## ----------------------------------------------------------------------------
+## nexus | NEW_PSF.config.mac
+##
+## Initialization macro to generate the PSF light tables in NEW
+##
+## The NEXT Collaboration
+## ----------------------------------------------------------------------------
+
+# verbosity
+/control/verbose  1
+/run/verbose      1
+/event/verbose    0
+/tracking/verbose 0
+
+# generator
+/Generator/ScintGenerator/region   EL_GAP
+/Generator/ScintGenerator/nphotons 1000000
+
+# geometry
+/Geometry/PmtR11410/time_binning    25. nanosecond
+# /Geometry/NextNew/sipm_time_binning 1. microsecond
+/Geometry/NextNew/max_step_size     1. mm
+/Geometry/NextNew/pressure        10.1 bar
+/Geometry/NextNew/elfield         false
+
+/Geometry/NextNew/el_gap_gen_disk_diam  15.0 mm
+/Geometry/NextNew/el_gap_gen_disk_y     5.0 mm
+/Geometry/NextNew/el_gap_gen_disk_x     5.0 mm
+/Geometry/NextNew/el_gap_gen_disk_zmin  0.0
+/Geometry/NextNew/el_gap_gen_disk_zmax  1.0
+
+# physics
+/PhysicsList/Nexus/clustering          false
+/PhysicsList/Nexus/drift               false
+/PhysicsList/Nexus/electroluminescence false
+/PhysicsList/Nexus/photoelectric       false
+
+# persistency
+/nexus/random_seed            100000
+/nexus/persistency/start_id   100000
+/nexus/persistency/outputFile NEW_PSF.next

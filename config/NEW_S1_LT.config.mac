@@ -1,0 +1,37 @@
+## ----------------------------------------------------------------------------
+## nexus | NEW_S1_LT.config.mac
+##
+## Initialization macro to generate the S1 light tables in NEW
+##
+## The NEXT Collaboration
+## ----------------------------------------------------------------------------
+
+# verbosity
+/control/verbose  1
+/run/verbose      1
+/event/verbose    0
+/tracking/verbose 0
+
+# generator
+/Generator/ScintGenerator/region   ACTIVE
+/Generator/ScintGenerator/nphotons 1000
+
+# geometry
+/Geometry/PmtR11410/time_binning   25. nanosecond
+# /Geometry/NextNew/sipm_time_binning 1. microsecond
+/Geometry/NextNew/max_step_size     1. mm
+/Geometry/NextNew/pressure        10.1 bar
+/Geometry/NextNew/elfield         false
+
+# physics
+/PhysicsList/Nexus/clustering          false
+/PhysicsList/Nexus/drift               false
+/PhysicsList/Nexus/electroluminescence false
+/PhysicsList/Nexus/photoelectric       false
+
+# persistency
+/nexus/random_seed            10000
+/nexus/persistency/start_id   10000
+/nexus/persistency/outputFile NEW_S1_LT.next
+
+
