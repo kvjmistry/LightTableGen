@@ -14,7 +14,7 @@
 
 # generator
 /Generator/ScintGenerator/region   ACTIVE
-/Generator/ScintGenerator/nphotons 1000
+/Generator/ScintGenerator/nphotons 1000000
 
 # geometry
 /Geometry/PmtR11410/time_binning   25. nanosecond
@@ -30,8 +30,8 @@
 /PhysicsList/Nexus/photoelectric       false
 
 # persistency
-/nexus/random_seed            10000
-/nexus/persistency/start_id   10000
+/nexus/random_seed            9800
+/nexus/persistency/start_id   9800
 /nexus/persistency/outputFile NEW_S1_LT.next
 
 
