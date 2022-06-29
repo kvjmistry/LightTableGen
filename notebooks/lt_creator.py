@@ -86,9 +86,10 @@ pmt_response['charge'] = pmt_response['charge']/nphotons
 
 # Set the light table
 LT = pmt_response
+ERR = pmt_response
 
 LT  = pd.DataFrame()
-# ERR = pd.DataFrame()
+ERR = pd.DataFrame()
 
 for i, filename in enumerate(lt_filenames, 1):
     sys.stdout.write(f"Processing file {i}/{len(lt_filenames)} \r")
@@ -126,7 +127,7 @@ for i, filename in enumerate(lt_filenames, 1):
     
     # Add the dataframe
     LT  = pd.concat([LT , pmt_response])
-    # ERR = pd.concat([ERR, err])
+    ERR = pd.concat([ERR, pmt_response])
 
 # Sum the total charge collected in each sensor for a given voxel across all events
 lt = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].sum().to_frame().reset_index()
@@ -139,7 +140,7 @@ LT  = pd.pivot_table(lt, values="charge", columns="sensor_id", index=["x", "y", 
 ERR = pd.pivot_table(err, values="charge", columns="sensor_id", index=["x", "y", "z"])
 
 LT.columns = LT.columns.rename("")
-ERR.columns = err.columns.rename("")
+ERR.columns = ERR.columns.rename("")
 
 LT  = LT.reset_index()
 ERR = ERR.reset_index()
