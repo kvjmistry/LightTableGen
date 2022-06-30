@@ -106,7 +106,7 @@ for i, filename in enumerate(lt_filenames, 1):
     ERR = pd.concat([ERR, pmt_response])
 
 # Sum the total charge collected in each sensor for a given voxel across all events
-lt = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].sum().to_frame().reset_index()
+lt = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].mean().to_frame().reset_index()
 
 # STD of the total charge collected in each sensor for a given voxel across all events
 err = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].std().to_frame().reset_index()
