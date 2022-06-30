@@ -13,8 +13,11 @@ from invisible_cities.io.dst_io import df_writer
 
 
 # Load in the files -- configure the path
-lt_dir = os.path.expandvars("../files/S1/")
-lt_filenames = glob.glob(os.path.join(lt_dir, "*.h5"))
+# lt_dir = os.path.expandvars("../files/S1_temp/")
+# lt_filenames = glob.glob(os.path.join(lt_dir, "*.h5"))
+lt_dir = os.path.expandvars("$SCRATCH/guenette_lab/Users/$USER/NEW_S1_LT/")
+lt_filenames = glob.glob(os.path.join(lt_dir, "*/*.h5"))
+
 lt_filenames = sorted(lt_filenames)
 print(lt_filenames)
 
@@ -129,8 +132,8 @@ for i, filename in enumerate(lt_filenames, 1):
     LT  = pd.concat([LT , pmt_response])
     ERR = pd.concat([ERR, pmt_response])
 
-# Sum the total charge collected in each sensor for a given voxel across all events
-lt = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].sum().to_frame().reset_index()
+# Get the mean charge collected in each sensor for a given voxel across all events
+lt = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].mean().to_frame().reset_index()
 
 # STD of the total charge collected in each sensor for a given voxel across all events
 err = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].std().to_frame().reset_index()
