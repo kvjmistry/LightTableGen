@@ -12,6 +12,24 @@ from invisible_cities.database  import load_db
 from invisible_cities.io.dst_io import load_dst
 from invisible_cities.io.dst_io import df_writer
 
+'''
+This script takes the nexus file output from the S1 simulation
+and slims down the file size so it can be saved on a local computer easier.
+
+To run:
+python slim_files.py
+
+Configure in this script:
+- The path to the files
+- The detector database
+
+How to read in the output from this file:
+df = pd.read_hdf(filename, 'MC/PMT_Response')
+df = pd.read_hdf(filename, 'MC/Config')
+
+'''
+
+
 
 # Load in the files -- configure the path
 lt_dir = os.path.expandvars("../S1_temp/")
@@ -47,22 +65,20 @@ for i, filename in enumerate(lt_filenames, 0):
     # Merge the MC Particle and Sensor dataframes to add the x, y, z positions
     pmt_response = pmt_response.merge(parts, on="event_id", how = 'inner')
 
+    # Add the number of photons and number of events to a dataframe
     f_num_phot = {'nphotons':[nphotons], 'num_events':[num_events]}
     df = pd.DataFrame(data=f_num_phot)
 
+    # Overwrite the filename to include slim
     outfile_full = os.path.basename(filename)
     outfile = os.path.splitext(outfile_full)[0]
     outfilename = os.path.splitext(outfile)[0]
     outfilename = outfilename + "_slim.next.h5"
     print(outfilename)
 
+    # Save the dataframes to an output file
     with tb.open_file(outfilename, 'w') as h5out:
         df_writer(h5out, pmt_response, "MC", "PMT_Response")
 
     with tb.open_file(outfilename, 'r+') as h5out:
         df_writer(h5out, df, "MC", "Config")
-
-
-# How to read in:
-# parts = pd.read_hdf(filename, 'MC/PMT_Response')
-# parts = pd.read_hdf(filename, 'MC/Config')
