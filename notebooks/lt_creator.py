@@ -59,13 +59,13 @@ pmt_response = pmt_response.groupby(["sensor_id", "event_id"])["charge"].sum().t
 pmt_response = pmt_response.merge(parts, on="event_id", how = 'inner')
 
 # Set the Binning
-xmin=-200
-xmax=200
+xmin=-210
+xmax=210
 xbw=20
 
 zmin=0
-zmax=700
-zbw=50
+zmax=510
+zbw=25
 
 xbins = np.arange(xmin, xmax+xbw, xbw)
 ybins = xbins
@@ -138,6 +138,9 @@ lt = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].mean().to_frame().reset_
 # STD of the total charge collected in each sensor for a given voxel across all events
 err = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].std().to_frame().reset_index()
 
+# Calculate error values
+err['charge'] = 100*err['charge']/lt['charge']
+
 # Now convert the format of the dataframe
 LT  = pd.pivot_table(lt, values="charge", columns="sensor_id", index=["x", "y", "z"])
 ERR = pd.pivot_table(err, values="charge", columns="sensor_id", index=["x", "y", "z"])
@@ -155,9 +158,11 @@ signal_type = "S1"
 # Rename the sensor columns to PMT number
 for sid in sensorids:
     LT = LT.rename({sid: pmt + f"_{sid}"}, axis=1)
+    ERR = ERR.rename({sid: pmt + f"_{sid}"}, axis=1)
 
 # Add column for the total charge in the PMTs
 LT[pmt + f"_total"] = LT.loc[:, LT.columns.difference(["x", "y", "z"])].sum(axis=1)
+ERR[pmt + f"_total"] = ERR.loc[:, ERR.columns.difference(["x", "y", "z"])].sum(axis=1)
 
 # Save the table to an output file
 save = True
@@ -169,7 +174,7 @@ if save:
 
 # create config and add to the file
 config = { "detector"   : "new"
-         , "ACTIVE_rad" : str(227)
+         , "ACTIVE_rad" : str(208)
          , "EL_GAP"     : str(6.0)
          , "table_type" : "energy"
          , "signal_type": signal_type
@@ -181,3 +186,7 @@ config = pd.DataFrame({"parameter": config.keys(), "value": config.values()})
 if save:
     with tb.open_file(outfilename, 'r+') as h5out:
         df_writer(h5out, config, "LT", "Config")
+
+if save:
+    with tb.open_file(outfilename, 'r+') as h5out:
+        df_writer(h5out, ERR, "LT", "Error")
