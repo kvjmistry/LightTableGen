@@ -1,7 +1,7 @@
 ## ----------------------------------------------------------------------------
-## nexus | NEW_S1_LT.config.mac
+## nexus | NEW_S2_LT.config.mac
 ##
-## Initialization macro to generate the S1 light tables in NEW
+## Initialization macro to generate the S2 light tables in NEW
 ##
 ## The NEXT Collaboration
 ## ----------------------------------------------------------------------------
@@ -13,7 +13,7 @@
 /tracking/verbose 0
 
 # generator
-/Generator/ScintGenerator/region   ACTIVE
+/Generator/ScintGenerator/region   EL_GAP
 /Generator/ScintGenerator/nphotons 1000000
 
 # geometry
@@ -31,6 +31,4 @@
 # persistency
 /nexus/random_seed            9800
 /nexus/persistency/start_id   9800
-/nexus/persistency/outputFile NEW_S1_LT.next
-
-
+/nexus/persistency/outputFile NEW_S2_LT.next

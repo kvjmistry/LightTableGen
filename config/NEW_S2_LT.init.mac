@@ -1,0 +1,26 @@
+## ----------------------------------------------------------------------------
+## nexus | NEW_S2_LT.init.mac
+##
+## Initialization macro to generate the S2 light tables in NEW
+##
+## The NEXT Collaboration
+## ----------------------------------------------------------------------------
+
+# physics lists
+/PhysicsList/RegisterPhysics NexusPhysics
+/PhysicsList/RegisterPhysics G4EmStandardPhysics_option4
+/PhysicsList/RegisterPhysics G4DecayPhysics
+/PhysicsList/RegisterPhysics G4RadioactiveDecayPhysics
+/PhysicsList/RegisterPhysics G4StepLimiterPhysics
+/PhysicsList/RegisterPhysics G4OpticalPhysics
+
+# geometry and generator
+/nexus/RegisterGeometry NextNew
+/nexus/RegisterGenerator ScintillationGenerator
+
+# actions
+/nexus/RegisterTrackingAction LightTableTrackingAction
+
+# persistency
+/nexus/RegisterPersistencyManager PersistencyManager
+/nexus/RegisterMacro NEW_S2_LT.config.mac
