@@ -32,3 +32,9 @@
 /nexus/random_seed            9800
 /nexus/persistency/start_id   9800
 /nexus/persistency/outputFile NEW_S2_LT.next
+
+/Geometry/NextNew/el_gap_gen_disk_diam  460 mm
+/Geometry/NextNew/el_gap_gen_disk_y     0.0 mm
+/Geometry/NextNew/el_gap_gen_disk_x     0.0 mm
+/Geometry/NextNew/el_gap_gen_disk_zmin  0.0
+/Geometry/NextNew/el_gap_gen_disk_zmax  1.0
