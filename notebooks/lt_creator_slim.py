@@ -14,14 +14,22 @@ from invisible_cities.io.dst_io import df_writer
 # Takes in the slim file format
 
 
+# Select the type
+signal_type = "S1"
+detector_db = "new"
+
 # Load in the files -- configure the path
-lt_dir = os.path.expandvars("../files/S1_slim/NEW_S1_LT_slim")
+
+if signal_type == "S1":
+    lt_dir = os.path.expandvars("../files/S1_slim/")
+else: 
+    lt_dir = os.path.expandvars("../files/S2_slim/")
+
 lt_filenames = glob.glob(os.path.join(lt_dir, "*.h5"))
 lt_filenames = sorted(lt_filenames)
 print(lt_filenames)
 
 # Configure the detector database
-detector_db = "new"
 datapmt = load_db.DataPMT(detector_db, 0)
 xpmt, ypmt = datapmt["X"].values, datapmt["Y"].values
 sensorids  = datapmt["SensorID"].values
@@ -33,26 +41,36 @@ for x, y, sid  in zip(xpmt, ypmt, sensorids):
 plt.savefig("PMT_Positions.pdf")
 
 
-# We first run over file 0 to populate the pandas dataframe
-filename = lt_filenames[0] # First file in list
-print("Starting with file: ",filename)
+# # We first run over file 0 to populate the pandas dataframe
+# filename = lt_filenames[0] # First file in list
+# print("Starting with file: ",filename)
 
-# Load the PMT Response and config dataframes
-pmt_response = pd.read_hdf(filename, 'MC/PMT_Response')
-config = pd.read_hdf(filename, 'MC/Config')
+# # Load the PMT Response and config dataframes
+# pmt_response = pd.read_hdf(filename, 'MC/PMT_Response')
+# config = pd.read_hdf(filename, 'MC/Config')
 
-num_events = int(config["num_events"].iloc[0])
-nphotons   = int(config["nphotons"].iloc[0])
-print("Num Events:", num_events, "Num Photons:", nphotons)
+# num_events = int(config["num_events"].iloc[0])
+# nphotons   = int(config["nphotons"].iloc[0])
+# print("Num Events:", num_events, "Num Photons:", nphotons)
 
 # Set the Binning
-xmin=-210
-xmax=210
-xbw=20
 
-zmin=0
-zmax=510
-zbw=25
+if signal_type == "S1":
+    xmin=-210
+    xmax=210
+    xbw=20
+
+    zmin=0
+    zmax=510
+    zbw=25
+else:
+    xmin=-210
+    xmax=210
+    xbw=5
+
+    zmin=-10
+    zmax=0
+    zbw=10
 
 xbins = np.arange(xmin, xmax+xbw, xbw)
 ybins = xbins
@@ -62,26 +80,26 @@ xbins_centre = np.arange(xmin+xbw/2, xmax+xbw/2, xbw)
 ybins_centre = xbins_centre
 zbins_centre = np.arange(zmin+zbw/2, zmax+zbw/2, zbw)
 
-# Now bin the x, y, z positions into 3D voxels. We label the bins with the 
-# midpoints
-pmt_response['x'] = pd.cut(x=pmt_response['initial_x'], bins=xbins,labels=xbins_centre, include_lowest=True)
-pmt_response['y'] = pd.cut(x=pmt_response['initial_y'], bins=ybins,labels=ybins_centre, include_lowest=True)
-pmt_response['z'] = pd.cut(x=pmt_response['initial_z'], bins=zbins,labels=zbins_centre, include_lowest=True)
+# # Now bin the x, y, z positions into 3D voxels. We label the bins with the 
+# # midpoints
+# pmt_response['x'] = pd.cut(x=pmt_response['initial_x'], bins=xbins,labels=xbins_centre, include_lowest=True)
+# pmt_response['y'] = pd.cut(x=pmt_response['initial_y'], bins=ybins,labels=ybins_centre, include_lowest=True)
+# pmt_response['z'] = pd.cut(x=pmt_response['initial_z'], bins=zbins,labels=zbins_centre, include_lowest=True)
 
-# remove the initial x,y,z since we are done with them
-pmt_response = pmt_response.drop(columns=['initial_x', 'initial_y', 'initial_z'])
+# # remove the initial x,y,z since we are done with them
+# pmt_response = pmt_response.drop(columns=['initial_x', 'initial_y', 'initial_z'])
 
-# Normalise the charge in each PMT by the total number of photons simulated
-pmt_response['charge'] = pmt_response['charge']/nphotons
+# # Normalise the charge in each PMT by the total number of photons simulated
+# pmt_response['charge'] = pmt_response['charge']/nphotons
 
 # Set the light table
-LT = pmt_response
-ERR = pmt_response
+# LT = pmt_response
+# ERR = pmt_response
 
 LT  = pd.DataFrame()
 ERR = pd.DataFrame()
 
-for i, filename in enumerate(lt_filenames, 1):
+for i, filename in enumerate(lt_filenames, 0):
     sys.stdout.write(f"Processing file {i}/{len(lt_filenames)} \r")
     sys.stdout.flush()
     
@@ -128,12 +146,14 @@ ERR = ERR.reset_index()
 
 
 pmt = "PmtR11410"
-signal_type = "S1"
 
 # Rename the sensor columns to PMT number
 for sid in sensorids:
     LT = LT.rename({sid: pmt + f"_{sid}"}, axis=1)
     ERR = ERR.rename({sid: pmt + f"_{sid}"}, axis=1)
+
+if signal_type == "S2":
+    LT = LT.drop("z", axis=1)
 
 # Add column for the total charge in the PMTs
 LT[pmt + f"_total"] = LT.loc[:, LT.columns.difference(["x", "y", "z"])].sum(axis=1)
@@ -148,16 +168,11 @@ if save:
         df_writer(h5out, LT, "LT", "LightTable")
 
 # create config and add to the file
-config = { "detector"   : "new"
-         , "ACTIVE_rad" : str(208)
-         , "EL_GAP"     : str(6.0)
-         , "table_type" : "energy"
-         , "signal_type": signal_type
-         , "sensor"     : pmt
-         , "pitch_x"    : str(10)
-         , "pitch_y"    : str(10)}
+config = { "parameter" : ["detector","ACTIVE_rad","EL_GAP", "table_type","signal_type","sensor","pitch_x","pitch_y"], 
+                "value": ["new"     ,str(208)    ,str(6.0), "energy"    , signal_type ,pmt     ,str(10)  , str(10)]}
 
-config = pd.DataFrame({"parameter": config.keys(), "value": config.values()})
+config = pd.DataFrame.from_dict(config)
+
 if save:
     with tb.open_file(outfilename, 'r+') as h5out:
         df_writer(h5out, config, "LT", "Config")

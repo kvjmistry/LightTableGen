@@ -12,10 +12,17 @@ from invisible_cities.io.dst_io import load_dst
 from invisible_cities.io.dst_io import df_writer
 
 
+# Select the type
+signal_type = "S1"
+
 # Load in the files -- configure the path
-# lt_dir = os.path.expandvars("../files/S1_temp/")
-# lt_filenames = glob.glob(os.path.join(lt_dir, "*.h5"))
-lt_dir = os.path.expandvars("$SCRATCH/guenette_lab/Users/$USER/NEW_S1_LT/")
+if signal_type == "S1":
+    lt_dir = os.path.expandvars("../files/S1/")
+else: 
+    lt_dir = os.path.expandvars("../files/S2/")
+
+
+# lt_dir = os.path.expandvars("$SCRATCH/guenette_lab/Users/$USER/NEW_S1_LT/")
 lt_filenames = glob.glob(os.path.join(lt_dir, "*/*.h5"))
 
 lt_filenames = sorted(lt_filenames)
@@ -59,13 +66,22 @@ pmt_response = pmt_response.groupby(["sensor_id", "event_id"])["charge"].sum().t
 pmt_response = pmt_response.merge(parts, on="event_id", how = 'inner')
 
 # Set the Binning
-xmin=-210
-xmax=210
-xbw=20
+if signal_type == "S1":
+    xmin=-210
+    xmax=210
+    xbw=20
 
-zmin=0
-zmax=510
-zbw=25
+    zmin=0
+    zmax=510
+    zbw=25
+else:
+    xmin=-210
+    xmax=210
+    xbw=5
+
+    zmin=-10
+    zmax=0
+    zbw=10
 
 xbins = np.arange(xmin, xmax+xbw, xbw)
 ybins = xbins
@@ -160,6 +176,9 @@ for sid in sensorids:
     LT = LT.rename({sid: pmt + f"_{sid}"}, axis=1)
     ERR = ERR.rename({sid: pmt + f"_{sid}"}, axis=1)
 
+if signal_type == "S2":
+    LT = LT.drop("z", axis=1)
+
 # Add column for the total charge in the PMTs
 LT[pmt + f"_total"] = LT.loc[:, LT.columns.difference(["x", "y", "z"])].sum(axis=1)
 ERR[pmt + f"_total"] = ERR.loc[:, ERR.columns.difference(["x", "y", "z"])].sum(axis=1)
@@ -173,16 +192,11 @@ if save:
         df_writer(h5out, LT, "LT", "LightTable")
 
 # create config and add to the file
-config = { "detector"   : "new"
-         , "ACTIVE_rad" : str(208)
-         , "EL_GAP"     : str(6.0)
-         , "table_type" : "energy"
-         , "signal_type": signal_type
-         , "sensor"     : pmt
-         , "pitch_x"    : str(10)
-         , "pitch_y"    : str(10)}
+config = { "parameter" : ["detector","ACTIVE_rad","EL_GAP", "table_type","signal_type","sensor","pitch_x","pitch_y"], 
+                "value": ["new"     ,str(208)    ,str(6.0), "energy"    , signal_type ,pmt     ,str(10)  , str(10)]}
 
-config = pd.DataFrame({"parameter": config.keys(), "value": config.values()})
+config = pd.DataFrame.from_dict(config)
+
 if save:
     with tb.open_file(outfilename, 'r+') as h5out:
         df_writer(h5out, config, "LT", "Config")
