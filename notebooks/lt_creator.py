@@ -12,8 +12,33 @@ from invisible_cities.io.dst_io import load_dst
 from invisible_cities.io.dst_io import df_writer
 
 
-# Select the type
+# Configure the script here
 signal_type = "S1"
+detector_db = "new"
+pmt = "PmtR11410" # name of the PMT
+Active_r = 208.0 # active radius in mm
+EL_GAP = 6.0 # EL gap in mm
+SiPM_Pitch = 10 # in mm
+
+# Set the Binning
+if signal_type == "S1":
+    # Min x val, max x val, x bin w (y are set equal to this)
+    xmin=-210; xmax=210; xbw=20
+
+    # Min z val, max z val, z bin w
+    zmin=0; zmax=510; zbw=25
+else:
+    # Min x val, max x val, x bin w (y are set equal to this)
+    xmin=-210; xmax=210; xbw=5
+
+    # Min z val, max z val, z bin w (in case of S2, we just want one bin in EL)
+    zmin=-10; zmax=0; zbw=10
+
+# create config which will be saved to the file
+config = { "parameter" : ["detector","ACTIVE_rad","EL_GAP"    , "table_type","signal_type","sensor","pitch_x"       ,"pitch_y"], 
+                "value": ["new"     ,str(Active_r),str(EL_GAP), "energy"     ,signal_type , pmt     ,str(SiPM_Pitch), str(SiPM_Pitch)]}
+
+config = pd.DataFrame.from_dict(config)
 
 # Load in the files -- configure the path
 if signal_type == "S1":
@@ -29,60 +54,11 @@ lt_filenames = sorted(lt_filenames)
 print(lt_filenames)
 
 # Configure the detector database
-detector_db = "new"
 datapmt = load_db.DataPMT(detector_db, 0)
 xpmt, ypmt = datapmt["X"].values, datapmt["Y"].values
 sensorids  = datapmt["SensorID"].values
 
-plt.figure()
-plt.scatter(xpmt, ypmt)
-for x, y, sid  in zip(xpmt, ypmt, sensorids):
-    plt.annotate(sid, (x, y))
-plt.savefig("PMT_Positions.pdf")
-
-
-# We first run over file 0 to populate the pandas dataframe
-filename = lt_filenames[0] # First file in list
-print("Starting with file: ",filename)
-
-# Load the MC Particle Tree to ger the intiial x, y, z positions sampled
-parts = pd.read_hdf(filename, 'MC/particles')
-parts = parts[['event_id', 'initial_x', 'initial_y', 'initial_z']]
-
-
-# Get the metadata from the files
-configuration = pd.read_hdf(filename, "MC/configuration").set_index("param_key")
-num_events = int(configuration.loc["num_events"][0])
-nphotons   = int(configuration.loc["/Generator/ScintGenerator/nphotons"][0])
-
-# Get the sensor response information
-sns_response  = pd.read_hdf(filename, "MC/sns_response")
-pmt_response  = sns_response[np.isin(sns_response["sensor_id"].values, datapmt["SensorID"].values)]
-
-# Sum total charge over all time bins
-pmt_response = pmt_response.groupby(["sensor_id", "event_id"])["charge"].sum().to_frame().reset_index()
-
-# Merge the MC Particle and Sensor dataframes to add the x, y, z positions
-pmt_response = pmt_response.merge(parts, on="event_id", how = 'inner')
-
-# Set the Binning
-if signal_type == "S1":
-    xmin=-210
-    xmax=210
-    xbw=20
-
-    zmin=0
-    zmax=510
-    zbw=25
-else:
-    xmin=-210
-    xmax=210
-    xbw=5
-
-    zmin=-10
-    zmax=0
-    zbw=10
-
+# Create the bins
 xbins = np.arange(xmin, xmax+xbw, xbw)
 ybins = xbins
 zbins = np.arange(zmin, zmax+zbw, zbw)
@@ -91,26 +67,11 @@ xbins_centre = np.arange(xmin+xbw/2, xmax+xbw/2, xbw)
 ybins_centre = xbins_centre
 zbins_centre = np.arange(zmin+zbw/2, zmax+zbw/2, zbw)
 
-# Now bin the x, y, z positions into 3D voxels. We label the bins with the 
-# midpoints
-pmt_response['x'] = pd.cut(x=pmt_response['initial_x'], bins=xbins,labels=xbins_centre, include_lowest=True)
-pmt_response['y'] = pd.cut(x=pmt_response['initial_y'], bins=ybins,labels=ybins_centre, include_lowest=True)
-pmt_response['z'] = pd.cut(x=pmt_response['initial_z'], bins=zbins,labels=zbins_centre, include_lowest=True)
-
-# remove the initial x,y,z since we are done with them
-pmt_response = pmt_response.drop(columns=['initial_x', 'initial_y', 'initial_z'])
-
-# Normalise the charge in each PMT by the total number of photons simulated
-pmt_response['charge'] = pmt_response['charge']/nphotons
-
-# Set the light table
-LT = pmt_response
-ERR = pmt_response
-
 LT  = pd.DataFrame()
 ERR = pd.DataFrame()
 
-for i, filename in enumerate(lt_filenames, 1):
+# Loop over the input files
+for i, filename in enumerate(lt_filenames, 0):
     sys.stdout.write(f"Processing file {i}/{len(lt_filenames)} \r")
     sys.stdout.flush()
     
@@ -168,9 +129,6 @@ LT  = LT.reset_index()
 ERR = ERR.reset_index()
 
 
-pmt = "PmtR11410"
-signal_type = "S1"
-
 # Rename the sensor columns to PMT number
 for sid in sensorids:
     LT = LT.rename({sid: pmt + f"_{sid}"}, axis=1)
@@ -190,12 +148,6 @@ outfilename = f"NEW-MC_{signal_type}_LT.h5"
 if save:
     with tb.open_file(outfilename, 'w') as h5out:
         df_writer(h5out, LT, "LT", "LightTable")
-
-# create config and add to the file
-config = { "parameter" : ["detector","ACTIVE_rad","EL_GAP", "table_type","signal_type","sensor","pitch_x","pitch_y"], 
-                "value": ["new"     ,str(208)    ,str(6.0), "energy"    , signal_type ,pmt     ,str(10)  , str(10)]}
-
-config = pd.DataFrame.from_dict(config)
 
 if save:
     with tb.open_file(outfilename, 'r+') as h5out:
