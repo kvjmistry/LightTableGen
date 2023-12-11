@@ -41,6 +41,8 @@ cat ${CONFIG}
 echo "Running NEXUS" 
 nexus -n $N_EVENTS ${INIT}
 
+ls
+
 echo "FINISHED....EXITING" 
 
 end=`date +%s`
