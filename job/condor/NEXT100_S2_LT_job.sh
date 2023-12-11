@@ -16,8 +16,8 @@ echo "Setting Up NEXUS"
 source /software/nexus/setup_nexus.sh
 
 # Set the configurable variables
-N_PHOTONS=10000
-N_EVENTS=1
+N_PHOTONS=1000000
+N_EVENTS=100
 CONFIG=${JOBNAME}.config.mac
 INIT=${JOBNAME}.init.mac
 
@@ -41,7 +41,7 @@ cat ${CONFIG}
 echo "Running NEXUS" 
 nexus -n $N_EVENTS ${INIT}
 
-ls
+ls -ltrh
 
 echo "FINISHED....EXITING" 
 
