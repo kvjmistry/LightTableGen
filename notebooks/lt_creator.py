@@ -13,12 +13,14 @@ from invisible_cities.io.dst_io import df_writer
 
 
 # Configure the script here
-signal_type = "S1"
+signal_type = "S2"
 detector_db = "new"
 pmt = "PmtR11410" # name of the PMT
 Active_r = 208.0 # active radius in mm
 EL_GAP = 6.0 # EL gap in mm
 SiPM_Pitch = 10 # in mm
+save = True
+save_Err = False
 
 # Set the Binning
 if signal_type == "S1":
@@ -142,7 +144,6 @@ LT[pmt + f"_total"] = LT.loc[:, LT.columns.difference(["x", "y", "z"])].sum(axis
 ERR[pmt + f"_total"] = ERR.loc[:, ERR.columns.difference(["x", "y", "z"])].sum(axis=1)
 
 # Save the table to an output file
-save = True
 outfilename = f"NEW-MC_{signal_type}_LT.h5"
 
 if save:
@@ -153,6 +154,6 @@ if save:
     with tb.open_file(outfilename, 'r+') as h5out:
         df_writer(h5out, config, "LT", "Config")
 
-if save:
+if save_Err:
     with tb.open_file(outfilename, 'r+') as h5out:
         df_writer(h5out, ERR, "LT", "Error")

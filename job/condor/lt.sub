@@ -1,0 +1,40 @@
+# lt.sub
+
+# The job title here.
+jobname=NEXT100_S2_LT
+CONFIG=$(jobname).config.mac
+INIT=$(jobname).init.mac
+
+OSDF_LOCATION = osdf:///ospool/PROTECTED/krishan.mistry/
+
+executable = $(jobname)_job.sh
+arguments = $(Process) $(jobname)
+
+# Specify the name of the log, standard error, and standard output (or "screen output") files. Wherever you see $(Cluster), HTCondor will insert the 
+#  queue number assigned to this set of jobs at the time of submission.
+log    = jobs/$(jobname)/jobid$(Process)/$(Cluster)_$(Process).log
+error  = jobs/$(jobname)/jobid$(Process)/$(Cluster)_$(Process).err
+output = jobs/$(jobname)/jobid$(Process)/$(Cluster)_$(Process).out
+
+# Transfer input files
+# transfer_input_files = file1,/absolute/pathto/file2,etc
+
+# Transfer output files
+transfer_output_remaps = NEXUS_OUTPUT.next = $(OSDF_LOCATION)/job/$(jobname)/$(jobname)_$(Cluster)_$(Process).next.h5
+
+# Specify Job duration category as "Medium" (expected runtime <10 hr) or "Long" (expected runtime <20 hr). 
++JobDurationCategory = "Medium"
+
+# Use a singularity image to submit the file. The image should be stored in the protected area of your workspace
++SingularityImage = "$(OSDF_LOCATION)/containers/nexus_container_main.sif"
+
+
+# Tell HTCondor requirements (e.g., operating system) your job needs, 
+# what amount of compute resources each job will need on the computer where it runs.
+requirements = (OSGVO_OS_STRING == "RHEL 7")
+request_cpus = 1
+request_memory = 4GB
+request_disk = 5GB
+
+# Tell HTCondor to run 3 instances of our job:
+queue 10

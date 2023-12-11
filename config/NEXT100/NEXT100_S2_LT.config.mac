@@ -1,7 +1,7 @@
 ## ----------------------------------------------------------------------------
-## nexus | NEW_S2_LT.config.mac
+## nexus | NEXT100_S2_LT.config.mac
 ##
-## Initialization macro to generate the S2 light tables in NEW
+## Initialization macro to generate the S2 light tables in NEXT100
 ##
 ## The NEXT Collaboration
 ## ----------------------------------------------------------------------------
@@ -18,9 +18,11 @@
 
 # geometry
 /Geometry/PmtR11410/time_binning   25. nanosecond
-/Geometry/NextNew/max_step_size     1. mm
-/Geometry/NextNew/pressure        10.1 bar
-/Geometry/NextNew/elfield         false
+/Geometry/Next100/max_step_size     1. mm
+/Geometry/Next100/pressure        13.5 bar
+/Geometry/Next100/elfield         false
+/Geometry/Next100/useDielectricGrid false
+/Geometry/Next100/grid_vis false
 
 # physics
 /PhysicsList/Nexus/clustering          false
@@ -31,10 +33,10 @@
 # persistency
 /nexus/random_seed            9800
 /nexus/persistency/start_id   9800
-/nexus/persistency/outputFile NEW_S2_LT.next
+/nexus/persistency/output_file NEXUS_OUTPUT.next
 
-/Geometry/NextNew/el_gap_gen_disk_diam  460 mm
-/Geometry/NextNew/el_gap_gen_disk_y     0.0 mm
-/Geometry/NextNew/el_gap_gen_disk_x     0.0 mm
-/Geometry/NextNew/el_gap_gen_disk_zmin  0.0
-/Geometry/NextNew/el_gap_gen_disk_zmax  1.0
+/Geometry/Next100/el_gap_gen_disk_diam  1000 mm
+/Geometry/Next100/el_gap_gen_disk_y     0.0 mm
+/Geometry/Next100/el_gap_gen_disk_x     0.0 mm
+/Geometry/Next100/el_gap_gen_disk_zmin  0.0
+/Geometry/Next100/el_gap_gen_disk_zmax  1.0

@@ -15,27 +15,32 @@ from invisible_cities.io.dst_io import df_writer
 
 
 # Configure the script here
-signal_type = "S1"
+signal_type = "S2"
 detector_db = "new"
 pmt = "PmtR11410"
 Active_r = 208.0 # active radius in mm
 EL_GAP = 6.0 # EL gap in mm
 SiPM_Pitch = 10 
+save=True
+save_Err=True
 
 
 # Set the Binning
+
+# S1
 if signal_type == "S1":
     # Min x val, max x val, x bin w (y are set equal to this)
     xmin=-210; xmax=210; xbw=20
 
     # Min z val, max z val, z bin w
-    zmin=0; zmax=510; zbw=25
+    zmin=0; zmax=510; zbw=20
+# S2
 else:
     # Min x val, max x val, x bin w (y are set equal to this)
     xmin=-210; xmax=210; xbw=5
 
     # Min z val, max z val, z bin w (in case of S2, we just want one bin in EL)
-    zmin=-10; zmax=0; zbw=10
+    zmin=-10; zmax=0; zbw=5
 
 
 # create config which will be saved to the file
@@ -79,10 +84,10 @@ for i, filename in enumerate(lt_filenames, 0):
     
     # Load the PMT Response and config dataframes
     pmt_response = pd.read_hdf(filename, 'MC/PMT_Response')
-    config = pd.read_hdf(filename, 'MC/Config')
+    conf = pd.read_hdf(filename, 'MC/Config')
 
-    num_events = int(config["num_events"].iloc[0])
-    nphotons   = int(config["nphotons"].iloc[0])
+    num_events = int(conf["num_events"].iloc[0])
+    nphotons   = int(conf["nphotons"].iloc[0])
 
     # Now bin the x, y, z positions
     pmt_response['x'] = pd.cut(x=pmt_response['initial_x'], bins=xbins,labels=xbins_centre, include_lowest=True)
@@ -99,11 +104,16 @@ for i, filename in enumerate(lt_filenames, 0):
     LT  = pd.concat([LT , pmt_response])
     ERR = pd.concat([ERR, pmt_response])
 
+print("Finished iterating over files")
+print("Aggregating files...")
+
 # Sum the total charge collected in each sensor for a given voxel across all events
 lt = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].mean().to_frame().reset_index()
 
 # STD of the total charge collected in each sensor for a given voxel across all events
-err = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].std().to_frame().reset_index()
+err = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].std().to_frame().reset_index() 
+
+# err = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].nunique().to_frame().reset_index()
 
 # Calculate error values
 err['charge'] = 100*err['charge']/lt['charge']
@@ -132,7 +142,6 @@ LT[pmt + f"_total"] = LT.loc[:, LT.columns.difference(["x", "y", "z"])].sum(axis
 ERR[pmt + f"_total"] = ERR.loc[:, ERR.columns.difference(["x", "y", "z"])].sum(axis=1)
 
 # Save the table to an output file
-save = True
 outfilename = f"NEW-MC_{signal_type}_LT.h5"
 
 if save:
@@ -143,6 +152,6 @@ if save:
     with tb.open_file(outfilename, 'r+') as h5out:
         df_writer(h5out, config, "LT", "Config")
 
-if save:
+if save_Err:
     with tb.open_file(outfilename, 'r+') as h5out:
         df_writer(h5out, ERR, "LT", "Error")

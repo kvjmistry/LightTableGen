@@ -1,0 +1,40 @@
+## ----------------------------------------------------------------------------
+## nexus | NEW_S2_LT.config.mac
+##
+## Initialization macro to generate the S2 light tables in NEW
+##
+## The NEXT Collaboration
+## ----------------------------------------------------------------------------
+
+# verbosity
+/control/verbose  1
+/run/verbose      1
+/event/verbose    0
+/tracking/verbose 0
+
+# generator
+/Generator/ScintGenerator/region   EL_GAP
+/Generator/ScintGenerator/nphotons 1000
+
+# geometry
+/Geometry/PmtR11410/time_binning   25. nanosecond
+/Geometry/NextNew/max_step_size     1. mm
+/Geometry/NextNew/pressure        10.1 bar
+/Geometry/NextNew/elfield         false
+
+# physics
+/PhysicsList/Nexus/clustering          false
+/PhysicsList/Nexus/drift               false
+/PhysicsList/Nexus/electroluminescence false
+/PhysicsList/Nexus/photoelectric       false
+
+# persistency
+/nexus/random_seed            9800
+/nexus/persistency/start_id   9800
+/nexus/persistency/outputFile NEW_S2_LT.next
+
+/Geometry/NextNew/el_gap_gen_disk_diam  460 mm
+/Geometry/NextNew/el_gap_gen_disk_y     0.0 mm
+/Geometry/NextNew/el_gap_gen_disk_x     0.0 mm
+/Geometry/NextNew/el_gap_gen_disk_zmin  0.0
+/Geometry/NextNew/el_gap_gen_disk_zmax  1.0
