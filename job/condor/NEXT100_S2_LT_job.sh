@@ -27,7 +27,7 @@ SEED=$((${N_EVENTS}*${JOBID} + ${N_EVENTS}))
 echo "The seed number is: ${SEED}" 
 
 # Change the config in the files
-sed -i "s#.*output_file.*#/nexus/persistency/output_file NEW_S2_LT_${JOBID}.next#" ${CONFIG}
+#sed -i "s#.*output_file.*#/nexus/persistency/output_file NEW_S2_LT_${JOBID}.next#" ${CONFIG}
 sed -i "s#.*nphotons.*#/Generator/ScintGenerator/nphotons ${N_PHOTONS}#" ${CONFIG}
 sed -i "s#.*random_seed.*#/nexus/random_seed ${SEED}#" ${CONFIG}
 sed -i "s#.*start_id.*#/nexus/persistency/start_id ${SEED}#" ${CONFIG}
