@@ -16,11 +16,11 @@ from invisible_cities.io.dst_io import df_writer
 
 # Configure the script here
 signal_type = "S2"
-detector_db = "new"
+detector_db = "next100"
 pmt = "PmtR11410"
-Active_r = 208.0 # active radius in mm
-EL_GAP = 6.0 # EL gap in mm
-SiPM_Pitch = 10 
+Active_r = 1000 # active radius in mm
+EL_GAP = 10.0 # EL gap in mm
+SiPM_Pitch = 15
 save=True
 save_Err=True
 
@@ -37,10 +37,10 @@ if signal_type == "S1":
 # S2
 else:
     # Min x val, max x val, x bin w (y are set equal to this)
-    xmin=-210; xmax=210; xbw=5
+    xmin=-500; xmax=500; xbw=5
 
     # Min z val, max z val, z bin w (in case of S2, we just want one bin in EL)
-    zmin=-10; zmax=0; zbw=5
+    zmin=-10; zmax=0; zbw=1
 
 
 # create config which will be saved to the file
@@ -54,7 +54,7 @@ config = pd.DataFrame.from_dict(config)
 if signal_type == "S1":
     lt_dir = os.path.expandvars("../files/S1_slim/")
 else: 
-    lt_dir = os.path.expandvars("../files/S2_slim/")
+    lt_dir = os.path.expandvars("../files/next100/")
 
 lt_filenames = glob.glob(os.path.join(lt_dir, "*.h5"))
 lt_filenames = sorted(lt_filenames)
@@ -142,7 +142,7 @@ LT[pmt + f"_total"] = LT.loc[:, LT.columns.difference(["x", "y", "z"])].sum(axis
 ERR[pmt + f"_total"] = ERR.loc[:, ERR.columns.difference(["x", "y", "z"])].sum(axis=1)
 
 # Save the table to an output file
-outfilename = f"NEW-MC_{signal_type}_LT.h5"
+outfilename = f"../files/next100/NEXT100-MC_{signal_type}_LT.h5"
 
 if save:
     with tb.open_file(outfilename, 'w') as h5out:
