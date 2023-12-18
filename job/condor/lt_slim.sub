@@ -7,7 +7,7 @@ SCRIPT=slim_files.py
 OSDF_LOCATION=osdf:///ospool/PROTECTED/krishan.mistry/
 HOME_LOCATION=/home/krishan.mistry/code/LightTableGen/
 
-newjobid = $(Process) + 100
+#newjobid = $(Process) + 100
 #NewProcess = $INT(newjobid, %d)
 NewProcess = $(Process)
 
@@ -25,6 +25,7 @@ transfer_input_files = $(HOME_LOCATION)/notebooks/$(SCRIPT), /ospool/PROTECTED/k
 
 # Transfer output files
 filename="${file%.*}"
+filename="${filename%.*}"
 transfer_output_remaps = "$(filename)_slim.next.h5=$(OSDF_LOCATION)/job/$(jobname)/$(filename)_slim.next.h5"
 
 # Specify Job duration category as "Medium" (expected runtime <10 hr) or "Long" (expected runtime <20 hr). 
