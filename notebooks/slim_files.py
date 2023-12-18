@@ -17,7 +17,7 @@ This script takes the nexus file output from the S1 simulation
 and slims down the file size so it can be saved on a local computer easier.
 
 To run:
-python slim_files.py
+python slim_files.py <input file>
 
 Configure in this script:
 - The path to the files
@@ -29,16 +29,17 @@ df = pd.read_hdf(filename, 'MC/Config')
 
 '''
 
-
-
 # Load in the files -- configure the path
-lt_dir = os.path.expandvars("../S1_temp/")
-lt_filenames = glob.glob(os.path.join(lt_dir, "*.h5"))
-lt_filenames = sorted(lt_filenames)
+# lt_dir = os.path.expandvars("../S1_temp/")
+# lt_filenames = glob.glob(os.path.join(lt_dir, "*.h5"))
+# lt_filenames = sorted(lt_filenames)
+# print(lt_filenames)
+
+lt_filenames = [sys.argv[1]]
 print(lt_filenames)
 
 # Configure the detector database
-detector_db = "new"
+detector_db = "next100"
 datapmt = load_db.DataPMT(detector_db, 0)
 xpmt, ypmt = datapmt["X"].values, datapmt["Y"].values
 sensorids  = datapmt["SensorID"].values
