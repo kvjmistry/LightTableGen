@@ -30,17 +30,17 @@ save_Err=True
 # S1
 if signal_type == "S1":
     # Min x val, max x val, x bin w (y are set equal to this)
-    xmin=-210; xmax=210; xbw=20
+    xmin=-500; xmax=500; xbw=20
 
     # Min z val, max z val, z bin w
     zmin=0; zmax=510; zbw=20
 # S2
 else:
     # Min x val, max x val, x bin w (y are set equal to this)
-    xmin=-500; xmax=500; xbw=5
+    xmin=-500; xmax=500; xbw=20
 
     # Min z val, max z val, z bin w (in case of S2, we just want one bin in EL)
-    zmin=-10; zmax=0; zbw=1
+    zmin=-12; zmax=2; zbw=1
 
 
 # create config which will be saved to the file
@@ -54,7 +54,7 @@ config = pd.DataFrame.from_dict(config)
 if signal_type == "S1":
     lt_dir = os.path.expandvars("../files/S1_slim/")
 else: 
-    lt_dir = os.path.expandvars("../files/next100/")
+    lt_dir = os.path.expandvars("../files/next100/NEXT100_S2_LT_Slim/")
 
 lt_filenames = glob.glob(os.path.join(lt_dir, "*.h5"))
 lt_filenames = sorted(lt_filenames)
@@ -107,20 +107,30 @@ for i, filename in enumerate(lt_filenames, 0):
 print("Finished iterating over files")
 print("Aggregating files...")
 
-# Sum the total charge collected in each sensor for a given voxel across all events
-lt = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].mean().to_frame().reset_index()
 
-# STD of the total charge collected in each sensor for a given voxel across all events
-err = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].std().to_frame().reset_index() 
-
-# err = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].nunique().to_frame().reset_index()
+# LT: Sum the total charge collected in each sensor for a given voxel across all events and also over z in case of S2
+# ERR: std of the total charge collected in each sensor for a given voxel across all events also over z in case of S2
+if signal_type == "S2":
+    lt = LT.groupby(["sensor_id", "x", "y"])["charge"].mean().to_frame().reset_index()
+    err = LT.groupby(["sensor_id", "x", "y"])["charge"].std().to_frame().reset_index() 
+else: 
+    
+    lt = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].mean().to_frame().reset_index()
+    err = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].std().to_frame().reset_index() 
+    # err = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].nunique().to_frame().reset_index()
 
 # Calculate error values
 err['charge'] = 100*err['charge']/lt['charge']
 
 # Now convert the format of the dataframe
-LT  = pd.pivot_table(lt, values="charge", columns="sensor_id", index=["x", "y", "z"])
-ERR = pd.pivot_table(err, values="charge", columns="sensor_id", index=["x", "y", "z"])
+
+if signal_type == "S2":
+    LT  = pd.pivot_table(lt, values="charge", columns="sensor_id", index=["x", "y"])
+    ERR = pd.pivot_table(err, values="charge", columns="sensor_id", index=["x", "y"])
+else: 
+    LT  = pd.pivot_table(lt, values="charge", columns="sensor_id", index=["x", "y", "z"])
+    ERR = pd.pivot_table(err, values="charge", columns="sensor_id", index=["x", "y", "z"])
+
 
 LT.columns = LT.columns.rename("")
 ERR.columns = ERR.columns.rename("")
@@ -128,21 +138,21 @@ ERR.columns = ERR.columns.rename("")
 LT  = LT.reset_index()
 ERR = ERR.reset_index()
 
-
 # Rename the sensor columns to PMT number
 for sid in sensorids:
     LT = LT.rename({sid: pmt + f"_{sid}"}, axis=1)
     ERR = ERR.rename({sid: pmt + f"_{sid}"}, axis=1)
 
-if signal_type == "S2":
-    LT = LT.drop("z", axis=1)
-
 # Add column for the total charge in the PMTs
-LT[pmt + f"_total"] = LT.loc[:, LT.columns.difference(["x", "y", "z"])].sum(axis=1)
-ERR[pmt + f"_total"] = ERR.loc[:, ERR.columns.difference(["x", "y", "z"])].sum(axis=1)
+if signal_type == "S2":
+    LT[pmt + f"_total"] = LT.loc[:, LT.columns.difference(["x", "y"])].sum(axis=1)
+    ERR[pmt + f"_total"] = ERR.loc[:, ERR.columns.difference(["x", "y"])].sum(axis=1)
+else:
+    LT[pmt + f"_total"] = LT.loc[:, LT.columns.difference(["x", "y", "z"])].sum(axis=1)
+    ERR[pmt + f"_total"] = ERR.loc[:, ERR.columns.difference(["x", "y", "z"])].sum(axis=1)
 
 # Save the table to an output file
-outfilename = f"../files/next100/NEXT100-MC_{signal_type}_LT.h5"
+outfilename = f"../LT/NEXT100-MC_{signal_type}_LT.h5"
 
 if save:
     with tb.open_file(outfilename, 'w') as h5out:

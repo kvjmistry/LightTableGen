@@ -41,5 +41,9 @@ request_cpus = 1
 request_memory = 4GB
 request_disk = 5GB
 
+# If submitting more than 10k jobs use this statement
+# max_idle = 2000
+
+
 # Tell HTCondor the number of instances to run:
 queue 100
