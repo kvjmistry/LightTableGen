@@ -54,7 +54,7 @@ config = pd.DataFrame.from_dict(config)
 if signal_type == "S1":
     lt_dir = os.path.expandvars("../files/S1_slim/")
 else: 
-    lt_dir = os.path.expandvars("../files/next100/NEXT100_S2_LT_Slim/")
+    lt_dir = os.path.expandvars("../files/next100/NEXT100_S2_LT_Slim_FakeGrid/")
 
 lt_filenames = glob.glob(os.path.join(lt_dir, "*.h5"))
 lt_filenames = sorted(lt_filenames)
@@ -152,7 +152,7 @@ else:
     ERR[pmt + f"_total"] = ERR.loc[:, ERR.columns.difference(["x", "y", "z"])].sum(axis=1)
 
 # Save the table to an output file
-outfilename = f"../LT/NEXT100-MC_{signal_type}_LT.h5"
+outfilename = f"../LT/NEXT100-MC_{signal_type}_LT_FakeGrid.h5"
 
 if save:
     with tb.open_file(outfilename, 'w') as h5out:

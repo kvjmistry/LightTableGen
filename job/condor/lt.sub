@@ -1,18 +1,18 @@
 # lt.sub
 
 # The job title here.
-jobname=NEXT100_S2_LT
+jobname=NEXT100_S2_LT_FakeGrid
 CONFIG=$(jobname).config.mac
 INIT=$(jobname).init.mac
 
 OSDF_LOCATION=osdf:///ospool/PROTECTED/krishan.mistry/
 HOME_LOCATION=/home/krishan.mistry/code/LightTableGen/
 
-newjobid = $(Process) + 100
+# newjobid = $(Process) + 100
 #NewProcess = $INT(newjobid, %d)
 NewProcess = $(Process)
 
-executable = $(jobname)_job.sh
+executable = NEXT100_S2_LT_job.sh
 arguments = $(NewProcess) $(jobname)
 
 # Specify the name of the log, standard error, and standard output (or "screen output") files. Wherever you see $(Cluster), HTCondor will insert the 
@@ -46,4 +46,4 @@ request_disk = 5GB
 
 
 # Tell HTCondor the number of instances to run:
-queue 100
+queue 1
