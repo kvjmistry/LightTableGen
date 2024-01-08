@@ -12,7 +12,7 @@ HOME_LOCATION=/home/krishan.mistry/code/LightTableGen/
 #NewProcess = $INT(newjobid, %d)
 NewProcess = $(Process)
 
-executable = NEXT100_S2_LT_job.sh
+executable = $(jobname)_job.sh
 arguments = $(NewProcess) $(jobname)
 
 # Specify the name of the log, standard error, and standard output (or "screen output") files. Wherever you see $(Cluster), HTCondor will insert the 
