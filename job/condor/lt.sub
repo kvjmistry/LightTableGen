@@ -31,7 +31,7 @@ transfer_output_remaps = "NEXUS_OUTPUT.next.h5=$(OSDF_LOCATION)/job/$(jobname)/$
 +JobDurationCategory = "Medium"
 
 # Use a singularity image to submit the file. The image should be stored in the protected area of your workspace
-+SingularityImage = "$(OSDF_LOCATION)/containers/nexus_container_ELHexGrids_v1.sif"
++SingularityImage = "$(OSDF_LOCATION)/containers/nexus_container_ELHexGrids_v2.sif"
 
 
 # Tell HTCondor requirements (e.g., operating system) your job needs, 
@@ -46,4 +46,4 @@ request_disk = 5GB
 
 
 # Tell HTCondor the number of instances to run:
-queue 1
+queue 3000
