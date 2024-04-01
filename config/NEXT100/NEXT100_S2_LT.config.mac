@@ -33,7 +33,7 @@
 # persistency
 /nexus/random_seed            9800
 /nexus/persistency/start_id   9800
-/nexus/persistency/output_file NEXUS_OUTPUT.next
+/nexus/persistency/output_file NEXUS_OUTPUT
 
 /Geometry/Next100/el_gap_gen_disk_diam  1000 mm
 /Geometry/Next100/el_gap_gen_disk_y     0.0 mm

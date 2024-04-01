@@ -72,9 +72,8 @@ for i, filename in enumerate(lt_filenames, 0):
 
     # Overwrite the filename to include slim
     outfile_full = os.path.basename(filename)
-    outfile = os.path.splitext(outfile_full)[0]
-    outfilename = os.path.splitext(outfile)[0]
-    outfilename = outfilename + "_slim.next.h5"
+    outfilename = os.path.splitext(outfile_full)[0]
+    outfilename = outfilename + "_slim.h5"
     print(outfilename)
 
     # Save the dataframes to an output file
