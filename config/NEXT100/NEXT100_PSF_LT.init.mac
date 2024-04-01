@@ -1,0 +1,26 @@
+## ----------------------------------------------------------------------------
+## nexus | NEXT_PSF_LT.init.mac
+##
+## Initialization macro to generate the PSF light tables in NEXT100
+##
+## The NEXT Collaboration
+## ----------------------------------------------------------------------------
+
+# physics lists
+/PhysicsList/RegisterPhysics NexusPhysics
+/PhysicsList/RegisterPhysics G4EmStandardPhysics_option4
+/PhysicsList/RegisterPhysics G4DecayPhysics
+/PhysicsList/RegisterPhysics G4RadioactiveDecayPhysics
+/PhysicsList/RegisterPhysics G4StepLimiterPhysics
+/PhysicsList/RegisterPhysics G4OpticalPhysics
+
+# geometry and generator
+/nexus/RegisterGeometry Next100
+/nexus/RegisterGenerator ScintillationGenerator
+
+# actions
+/nexus/RegisterTrackingAction LightTableTrackingAction
+
+# persistency
+/nexus/RegisterPersistencyManager PersistencyManager
+/nexus/RegisterMacro NEXT100_PSF_LT.config.mac

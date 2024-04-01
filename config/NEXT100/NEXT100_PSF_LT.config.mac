@@ -1,7 +1,7 @@
 ## ----------------------------------------------------------------------------
-## nexus | NEXT100_S2_LT.config.mac
+## nexus | NEXT100_PSF_LT.config.mac
 ##
-## Initialization macro to generate the S2 light tables in NEXT100
+## Initialization macro to generate the PSF light tables in NEXT100
 ##
 ## The NEXT Collaboration
 ## ----------------------------------------------------------------------------
@@ -33,8 +33,8 @@
 /nexus/persistency/start_id   9800
 /nexus/persistency/output_file NEXUS_OUTPUT
 
-/Geometry/Next100/el_gap_gen_disk_diam  1000 mm
-/Geometry/Next100/el_gap_gen_disk_y     0.0 mm
-/Geometry/Next100/el_gap_gen_disk_x     0.0 mm
+/Geometry/Next100/el_gap_gen_disk_diam 20.0 mm
+/Geometry/Next100/el_gap_gen_disk_x   7.775 mm
+/Geometry/Next100/el_gap_gen_disk_y   7.775 mm
 /Geometry/Next100/el_gap_gen_disk_zmin  0.0
 /Geometry/Next100/el_gap_gen_disk_zmax  1.0

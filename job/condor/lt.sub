@@ -25,7 +25,7 @@ output = jobs/$(jobname)/jobid$(NewProcess)/$(Cluster)_$(NewProcess).out
 transfer_input_files = $(HOME_LOCATION)/config/NEXT100/$(INIT),$(HOME_LOCATION)/config/NEXT100/$(CONFIG)
 
 # Transfer output files
-transfer_output_remaps = "NEXUS_OUTPUT_slim.h5=$(OSDF_LOCATION)/job/$(jobname)/$(jobname)_$(Cluster)_$(NewProcess).next.h5"
+transfer_output_remaps = "NEXUS_OUTPUT_slim.h5=$(OSDF_LOCATION)/job/$(jobname)/$(jobname)_$(Cluster)_$(NewProcess).h5"
 
 # Specify Job duration category as "Medium" (expected runtime <10 hr) or "Long" (expected runtime <20 hr). 
 +JobDurationCategory = "Medium"
