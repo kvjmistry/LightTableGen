@@ -1,15 +1,11 @@
 import os
 import os.path
-import re
 import sys
-import glob
 import numpy  as np
 import pandas as pd
 import tables as tb
-import matplotlib.pyplot as plt
 
 from invisible_cities.database  import load_db
-from invisible_cities.io.dst_io import load_dst
 from invisible_cities.io.dst_io import df_writer
 
 '''
