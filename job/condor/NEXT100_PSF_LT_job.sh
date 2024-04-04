@@ -39,8 +39,8 @@ cat ${CONFIG}
 # NEXUS
 echo "Running NEXUS" 
 nexus -n $N_EVENTS ${INIT}
-echo "Slimming file" 
-python3 slim_files.py NEXUS_OUTPUT.h5
+echo "Compressing file" 
+python3 compress_files.py NEXUS_OUTPUT
 
 ls -ltrh
 
