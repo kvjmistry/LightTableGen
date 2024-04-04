@@ -32,7 +32,7 @@ transfer_output_remaps = "NEXUS_OUTPUT_slim.h5=$(OSDF_LOCATION)/job/$(jobname)/$
 +JobDurationCategory = "Medium"
 
 # Use a singularity image to submit the file. The image should be stored in the protected area of your workspace
-+SingularityImage = "$(OSDF_LOCATION)/containers/icnexus_v1.sif"
++SingularityImage = "$(OSDF_LOCATION)/containers/icnexus_v2.sif"
 
 
 # Tell HTCondor requirements (e.g., operating system) your job needs, 

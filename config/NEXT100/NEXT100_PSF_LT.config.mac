@@ -19,7 +19,7 @@
 # geometry
 /Geometry/PmtR11410/time_binning   25. nanosecond
 /Geometry/Next100/max_step_size     1. mm
-/Geometry/Next100/pressure        13.5 bar
+/Geometry/Next100/pressure        5 bar
 /Geometry/Next100/elfield         false
 
 # physics
