@@ -15,7 +15,7 @@ from invisible_cities.io.dst_io import df_writer
 
 
 # Configure the script here
-signal_type = "S2"
+signal_type = "S2" # S1/S2
 detector_db = "next100"
 pmt = "PmtR11410"
 Active_r = 1000 # active radius in mm
@@ -44,17 +44,17 @@ else:
 
 
 # create config which will be saved to the file
-config = { "parameter" : ["detector",  "ACTIVE_rad", "EL_GAP"   , "table_type","signal_type","sensor","pitch_x"       ,"pitch_y"], 
-                "value": [detector_db, str(Active_r),str(EL_GAP), "energy"     ,signal_type , pmt     ,str(SiPM_Pitch), str(SiPM_Pitch)]}
+config = { "parameter" : ["detector",  "ACTIVE_rad", "EL_GAP"   , "table_type","signal_type","sensor","pitch_x"       ,"pitch_y", "nexus"], 
+                "value": [detector_db, str(Active_r),str(EL_GAP), "energy"     ,signal_type , pmt     ,str(SiPM_Pitch), str(SiPM_Pitch), "v7_08_00"]}
 
 config = pd.DataFrame.from_dict(config)
 
 # Load in the files -- configure the path
 
 if signal_type == "S1":
-    lt_dir = os.path.expandvars("../files/S1_slim/")
+    lt_dir = os.path.expandvars("../files/NEXT100_S1_LT/")
 else: 
-    lt_dir = os.path.expandvars("../files/next100/NEXT100_S2_LT_Slim_FakeGrid/")
+    lt_dir = os.path.expandvars("../files/next100/NEXT100_S2_LT/")
 
 lt_filenames = glob.glob(os.path.join(lt_dir, "*.h5"))
 lt_filenames = sorted(lt_filenames)
@@ -81,14 +81,26 @@ ERR = pd.DataFrame()
 for i, filename in enumerate(lt_filenames, 0):
     sys.stdout.write(f"Processing file {i}/{len(lt_filenames)} \r")
     sys.stdout.flush()
+
+    # Load the MC Particle Tree to ger the intiial x, y, z positions sampled
+    parts = pd.read_hdf(filename, 'MC/particles')
+    parts = parts[['event_id', 'initial_x', 'initial_y', 'initial_z']]
+
+    # Get the metadata from the files
+    configuration = pd.read_hdf(filename, "MC/configuration").set_index("param_key")
+    num_events = int(configuration.loc["num_events"][0])
+    nphotons   = int(configuration.loc["/Generator/ScintGenerator/nphotons"][0])
+
+    # Get the sensor response information
+    sns_response  = pd.read_hdf(filename, "MC/sns_response")
+    pmt_response  = sns_response[np.isin(sns_response["sensor_id"].values, datapmt["SensorID"].values)]
+
+    # Sum total charge over all time bins
+    pmt_response = pmt_response.groupby(["sensor_id", "event_id"])["charge"].sum().to_frame().reset_index()
+
+    # Merge the MC Particle and Sensor dataframes to add the x, y, z positions
+    pmt_response = pmt_response.merge(parts, on="event_id", how = 'inner')
     
-    # Load the PMT Response and config dataframes
-    pmt_response = pd.read_hdf(filename, 'MC/PMT_Response')
-    conf = pd.read_hdf(filename, 'MC/Config')
-
-    num_events = int(conf["num_events"].iloc[0])
-    nphotons   = int(conf["nphotons"].iloc[0])
-
     # Now bin the x, y, z positions
     pmt_response['x'] = pd.cut(x=pmt_response['initial_x'], bins=xbins,labels=xbins_centre, include_lowest=True)
     pmt_response['y'] = pd.cut(x=pmt_response['initial_y'], bins=ybins,labels=ybins_centre, include_lowest=True)
@@ -104,9 +116,8 @@ for i, filename in enumerate(lt_filenames, 0):
     LT  = pd.concat([LT , pmt_response])
     ERR = pd.concat([ERR, pmt_response])
 
-print("Finished iterating over files")
-print("Aggregating files...")
-
+print("Finished loading light-table")
+print("Aggregating light table...")
 
 # LT: Sum the total charge collected in each sensor for a given voxel across all events and also over z in case of S2
 # ERR: std of the total charge collected in each sensor for a given voxel across all events also over z in case of S2

@@ -4,8 +4,8 @@
 jobname=NEXT100_S2_LT
 CONFIG=$(jobname).config.mac
 INIT=$(jobname).init.mac
-# SCRIPT=compress_files.py
-SCRIPT=slim_files.py
+SCRIPT=compress_files.py
+# SCRIPT=slim_files.py
 
 OSDF_LOCATION=osdf:///ospool/PROTECTED/krishan.mistry/
 HOME_LOCATION=/home/krishan.mistry/code/LightTableGen/

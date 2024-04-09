@@ -14,7 +14,7 @@ start=`date +%s`
 # Setup nexus
 echo "Setting Up NEXUS and IC" 
 source /software/nexus/setup_nexus.sh
-source /software/IC/setup_IC.sh
+# source /software/IC/setup_IC.sh
 
 # Set the configurable variables
 N_PHOTONS=1000000
@@ -40,7 +40,7 @@ cat ${CONFIG}
 echo "Running NEXUS" 
 nexus -n $N_EVENTS ${INIT}
 echo "Slimming file" 
-python3 slim_files.py NEXUS_OUTPUT.h5
+python3 compress_files.py NEXUS_OUTPUT
 
 ls -ltrh
 
