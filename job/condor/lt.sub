@@ -41,7 +41,7 @@ transfer_output_remaps = "NEXUS_OUTPUT_slim.h5=$(OSDF_LOCATION)/job/$(jobname)/$
 requirements = (OSGVO_OS_STRING == "RHEL 7")
 request_cpus = 1
 request_memory = 4GB
-request_disk = 5GB
+request_disk = 4GB
 
 # If submitting more than 10k jobs use this statement
 max_idle = 2000
