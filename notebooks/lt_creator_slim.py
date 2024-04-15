@@ -54,7 +54,7 @@ config = pd.DataFrame.from_dict(config)
 if signal_type == "S1":
     lt_dir = os.path.expandvars("../files/NEXT100_S1_LT/")
 else: 
-    lt_dir = os.path.expandvars("../files/next100/NEXT100_S2_LT/")
+    lt_dir = os.path.expandvars("/media/argon/HDD_8tb/Krishan/LightTables/NEXT100_S2_LT/")
 
 lt_filenames = glob.glob(os.path.join(lt_dir, "*.h5"))
 lt_filenames = sorted(lt_filenames)
