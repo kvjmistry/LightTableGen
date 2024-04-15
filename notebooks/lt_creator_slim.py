@@ -111,68 +111,85 @@ for i, filename in enumerate(lt_filenames, 0):
 
     # Normalise the charge in each PMT by the total number of photons simulated
     pmt_response['charge'] = pmt_response['charge']/nphotons
-    
+
+
+    # Get the count of entries
+    lt_count = pmt_response.groupby(["sensor_id", "x", "y", "z"])["charge"].count().to_frame().reset_index()
+    lt_count.rename(columns={'charge': 'N'}, inplace=True)
+
+    # Use sum instead of mean
+    lt_sum = pmt_response.groupby(["sensor_id", "x", "y", "z"])["charge"].sum().to_frame().reset_index()
+    lt_sum.rename(columns={'charge': 'sum'}, inplace=True)
+
+    # Get the sum of squares
+    pmt_response['charge_squared'] = np.square(LT['charge'])
+    lt_sum_of_squares = pmt_response.groupby(["sensor_id", "x", "y", "z"])["charge_squared"].sum().to_frame().reset_index()
+    lt_sum_of_squares.rename(columns={'charge_squared': 'sum2'}, inplace=True)
+
+    # Merge the results
+    result = pd.merge(lt_count, lt_sum, on=["sensor_id", "x", "y","z"])
+    result = pd.merge(result, lt_sum_of_squares, on=["sensor_id", "x", "y","z"])
+
     # Add the dataframe
-    LT  = pd.concat([LT , pmt_response])
-    ERR = pd.concat([ERR, pmt_response])
+    LT  = pd.concat([LT , result])
 
 print("Finished loading light-table")
 print("Aggregating light table...")
 
-# LT: Sum the total charge collected in each sensor for a given voxel across all events and also over z in case of S2
-# ERR: std of the total charge collected in each sensor for a given voxel across all events also over z in case of S2
-if signal_type == "S2":
-    lt = LT.groupby(["sensor_id", "x", "y"])["charge"].mean().to_frame().reset_index()
-    err = LT.groupby(["sensor_id", "x", "y"])["charge"].std().to_frame().reset_index() 
-else: 
+# # LT: Sum the total charge collected in each sensor for a given voxel across all events and also over z in case of S2
+# # ERR: std of the total charge collected in each sensor for a given voxel across all events also over z in case of S2
+# if signal_type == "S2":
+#     lt = LT.groupby(["sensor_id", "x", "y"])["charge"].mean().to_frame().reset_index()
+#     err = LT.groupby(["sensor_id", "x", "y"])["charge"].std().to_frame().reset_index() 
+# else: 
     
-    lt = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].mean().to_frame().reset_index()
-    err = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].std().to_frame().reset_index() 
-    # err = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].nunique().to_frame().reset_index()
+#     lt = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].mean().to_frame().reset_index()
+#     err = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].std().to_frame().reset_index() 
+#     # err = LT.groupby(["sensor_id", "x", "y", "z"])["charge"].nunique().to_frame().reset_index()
 
-# Calculate error values
-err['charge'] = 100*err['charge']/lt['charge']
+# # Calculate error values
+# err['charge'] = 100*err['charge']/lt['charge']
 
-# Now convert the format of the dataframe
+# # Now convert the format of the dataframe
 
-if signal_type == "S2":
-    LT  = pd.pivot_table(lt, values="charge", columns="sensor_id", index=["x", "y"])
-    ERR = pd.pivot_table(err, values="charge", columns="sensor_id", index=["x", "y"])
-else: 
-    LT  = pd.pivot_table(lt, values="charge", columns="sensor_id", index=["x", "y", "z"])
-    ERR = pd.pivot_table(err, values="charge", columns="sensor_id", index=["x", "y", "z"])
+# if signal_type == "S2":
+#     LT  = pd.pivot_table(lt, values="charge", columns="sensor_id", index=["x", "y"])
+#     ERR = pd.pivot_table(err, values="charge", columns="sensor_id", index=["x", "y"])
+# else: 
+#     LT  = pd.pivot_table(lt, values="charge", columns="sensor_id", index=["x", "y", "z"])
+#     ERR = pd.pivot_table(err, values="charge", columns="sensor_id", index=["x", "y", "z"])
 
 
-LT.columns = LT.columns.rename("")
-ERR.columns = ERR.columns.rename("")
+# LT.columns = LT.columns.rename("")
+# ERR.columns = ERR.columns.rename("")
 
-LT  = LT.reset_index()
-ERR = ERR.reset_index()
+# LT  = LT.reset_index()
+# ERR = ERR.reset_index()
 
-# Rename the sensor columns to PMT number
-for sid in sensorids:
-    LT = LT.rename({sid: pmt + f"_{sid}"}, axis=1)
-    ERR = ERR.rename({sid: pmt + f"_{sid}"}, axis=1)
+# # Rename the sensor columns to PMT number
+# for sid in sensorids:
+#     LT = LT.rename({sid: pmt + f"_{sid}"}, axis=1)
+#     ERR = ERR.rename({sid: pmt + f"_{sid}"}, axis=1)
 
-# Add column for the total charge in the PMTs
-if signal_type == "S2":
-    LT[pmt + f"_total"] = LT.loc[:, LT.columns.difference(["x", "y"])].sum(axis=1)
-    ERR[pmt + f"_total"] = ERR.loc[:, ERR.columns.difference(["x", "y"])].sum(axis=1)
-else:
-    LT[pmt + f"_total"] = LT.loc[:, LT.columns.difference(["x", "y", "z"])].sum(axis=1)
-    ERR[pmt + f"_total"] = ERR.loc[:, ERR.columns.difference(["x", "y", "z"])].sum(axis=1)
+# # Add column for the total charge in the PMTs
+# if signal_type == "S2":
+#     LT[pmt + f"_total"] = LT.loc[:, LT.columns.difference(["x", "y"])].sum(axis=1)
+#     ERR[pmt + f"_total"] = ERR.loc[:, ERR.columns.difference(["x", "y"])].sum(axis=1)
+# else:
+#     LT[pmt + f"_total"] = LT.loc[:, LT.columns.difference(["x", "y", "z"])].sum(axis=1)
+#     ERR[pmt + f"_total"] = ERR.loc[:, ERR.columns.difference(["x", "y", "z"])].sum(axis=1)
 
-# Save the table to an output file
-outfilename = f"../LT/NEXT100-MC_{signal_type}_LT_FakeGrid.h5"
+# # Save the table to an output file
+# outfilename = f"../LT/NEXT100-MC_{signal_type}_LT_FakeGrid.h5"
 
-if save:
-    with tb.open_file(outfilename, 'w') as h5out:
-        df_writer(h5out, LT, "LT", "LightTable")
+# if save:
+#     with tb.open_file(outfilename, 'w') as h5out:
+#         df_writer(h5out, LT, "LT", "LightTable")
 
-if save:
-    with tb.open_file(outfilename, 'r+') as h5out:
-        df_writer(h5out, config, "LT", "Config")
+# if save:
+#     with tb.open_file(outfilename, 'r+') as h5out:
+#         df_writer(h5out, config, "LT", "Config")
 
-if save_Err:
-    with tb.open_file(outfilename, 'r+') as h5out:
-        df_writer(h5out, ERR, "LT", "Error")
+# if save_Err:
+#     with tb.open_file(outfilename, 'r+') as h5out:
+#         df_writer(h5out, ERR, "LT", "Error")
