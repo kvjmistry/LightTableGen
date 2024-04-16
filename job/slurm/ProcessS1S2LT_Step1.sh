@@ -18,11 +18,13 @@ source /home/argon/Projects/Krishan/IC/setup_IC.sh
 mkdir -p /media/argon/HDD_8tb/Krishan/LightTables/NEXT100_S2_LT_Step1/S2/
 cd       /media/argon/HDD_8tb/Krishan/LightTables/NEXT100_S2_LT_Step1/S2/
 
+JOBID=$((SLURM_ARRAY_TASK_ID + 0))
+
 # Get the nth file from the list
-file=$(sed -n "${SLURM_ARRAY_TASK_ID}{p;q;}"  /media/argon/HDD_8tb/Krishan/LightTables/filelist_s2.txt)
+file=$(sed -n "${JOBID}{p;q;}"  /media/argon/HDD_8tb/Krishan/LightTables/filelist_s2.txt)
 
 # Launch nexus
-python3 $HOME/notebooks/lt_creator_S1S2_1.py "${file}" ${SLURM_ARRAY_TASK_ID}
+python3 $HOME/notebooks/lt_creator_S1S2_1.py "${file}" ${JOBID}
 
 echo "FINISHED....EXITING"
 
