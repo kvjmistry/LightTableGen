@@ -22,7 +22,7 @@ cd       /media/argon/HDD_8tb/Krishan/LightTables/NEXT100_S2_LT_Step1/S2/
 file=$(sed -n "${SLURM_ARRAY_TASK_ID}{p;q;}"  /media/argon/HDD_8tb/Krishan/LightTables/filelist_s2.txt)
 
 # Launch nexus
-python3 $HOME/notebooks/lt_creator_S1S2_1.py "${file}"
+python3 $HOME/notebooks/lt_creator_S1S2_1.py "${file}" ${SLURM_ARRAY_TASK_ID}
 
 echo "FINISHED....EXITING"
 

@@ -127,7 +127,8 @@ print("Aggregating light table...")
 
 
 # Save the table to an output file
-outfilename = f"NEXT100-MC_{signal_type}_LT_Step1.h5"
+index=sys.argv[2]
+outfilename = f"NEXT100-MC_{signal_type}_LT_Step1_{index}.h5"
 
 if save:
     with tb.open_file(outfilename, 'w') as h5out:
