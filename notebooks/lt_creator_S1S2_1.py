@@ -128,12 +128,8 @@ print("Aggregating light table...")
 
 # Save the table to an output file
 index=sys.argv[2]
-outfilename = f"NEXT100-MC_{signal_type}_LT_Step1_{index}.h5"
 
-if save:
-    with tb.open_file(outfilename, 'w') as h5out:
-        df_writer(h5out, LT, "LT", "LightTable")
-
-if save:
-    with tb.open_file(outfilename, 'r+') as h5out:
-        df_writer(h5out, config, "LT", "Config")
+with pd.HDFStore(f"NEXT100-MC_{signal_type}_LT_Step1_{index}.h5", mode='w', complevel=5, complib='zlib') as store:
+    # Write each DataFrame to the file with a unique key
+    store.put('LT/LightTable', LT, format='table')
+    store.put('LT/Config',config, format='table')
