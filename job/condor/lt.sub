@@ -1,7 +1,7 @@
 # lt.sub
 
 # The job title here.
-jobname=NEXT100_S2_LT
+jobname=NEXT100_PSF_LT
 CONFIG=$(jobname).config.mac
 INIT=$(jobname).init.mac
 SCRIPT=compress_files.py
@@ -33,7 +33,7 @@ transfer_output_remaps = "NEXUS_OUTPUT_slim.h5=$(OSDF_LOCATION)/job/$(jobname)/$
 +JobDurationCategory = "Medium"
 
 # Use a singularity image to submit the file. The image should be stored in the protected area of your workspace
-+SingularityImage = "$(OSDF_LOCATION)/containers/nexus.sif"
++SingularityImage = "$(OSDF_LOCATION)/containers/nexus_v5.sif"
 
 
 # Tell HTCondor requirements (e.g., operating system) your job needs, 
@@ -48,4 +48,4 @@ max_idle = 2000
 
 
 # Tell HTCondor the number of instances to run:
-queue 3000
+queue 10000
