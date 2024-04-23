@@ -30,10 +30,10 @@ save_Err=True
 # S1
 if signal_type == "S1":
     # Min x val, max x val, x bin w (y are set equal to this)
-    xmin=-500; xmax=500; xbw=20
+    xmin=-490-65.33/2; xmax=490+65.33/2; xbw=65.33
 
     # Min z val, max z val, z bin w
-    zmin=0; zmax=510; zbw=20
+    zmin=-5; zmax=1190; zbw=20
 # S2
 else:
     # Min x val, max x val, x bin w (y are set equal to this)

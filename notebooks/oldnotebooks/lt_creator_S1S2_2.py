@@ -16,7 +16,7 @@ from invisible_cities.io.dst_io import df_writer
 signal_type = "S2" # S1/S2
 detector_db = "next100"
 pmt = "PmtR11410"
-path_="../files/NEXT100_S1_LT/"
+path_="../files/next100/NEXT100_S2_LT_Step1/"
 
 # Load in the files -- configure the path
 column_arr = ["sensor_id", "x", "y", "z"]
@@ -27,7 +27,7 @@ if signal_type == "S2":
     column_arr = ["sensor_id", "x", "y"]
 
 lt_dir = os.path.expandvars(path_)
-lt_filenames = glob.glob(os.path.join(lt_dir, "*Step1.h5"))
+lt_filenames = glob.glob(os.path.join(lt_dir, "*.h5"))
 lt_filenames = sorted(lt_filenames)
 print(lt_filenames)
 
@@ -49,6 +49,9 @@ for i, filename in enumerate(lt_filenames, 0):
 
     # Add to the dataframe
     LT  = pd.concat([LT , lt])
+    
+    # Consolodate the duplicate rows
+    LT = LT.groupby(['sensor_id', 'x', 'y', 'z']).agg({'N': 'sum', 'sum': 'sum', 'sum2': 'sum'}).reset_index()
 
     
 # Consolodate the duplicate rows
