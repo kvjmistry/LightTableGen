@@ -11,7 +11,7 @@ from invisible_cities.database  import load_db
 from invisible_cities.io.dst_io import load_dst
 from invisible_cities.io.dst_io import df_writer
 
-# Takes in the slim file format
+# Takes in the compressed nexus files from simulation
 
 
 # Configure the script here
@@ -45,7 +45,7 @@ else:
 
 # create config which will be saved to the file
 config = { "parameter" : ["detector",  "ACTIVE_rad", "EL_GAP"   , "table_type","signal_type","sensor","pitch_x"       ,"pitch_y", "nexus"], 
-                "value": [detector_db, str(Active_r),str(EL_GAP), "energy"     ,signal_type , pmt     ,str(SiPM_Pitch), str(SiPM_Pitch), "v7_08_00"]}
+                "value": [detector_db, str(Active_r),str(EL_GAP), "energy"     ,signal_type , pmt     ,str(SiPM_Pitch), str(SiPM_Pitch), "v7_10_00"]}
 
 config = pd.DataFrame.from_dict(config)
 
