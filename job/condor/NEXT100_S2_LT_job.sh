@@ -46,6 +46,8 @@ ls -ltrh
 
 echo "Removing nexus output"
 rm NEXUS_OUTPUT.h5
+rm *.config
+rm *.py
 
 echo "FINISHED....EXITING" 
 
