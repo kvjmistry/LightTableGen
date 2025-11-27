@@ -13,7 +13,7 @@
 /tracking/verbose 0
 
 # generator
-/Generator/ScintGenerator/region   EL_GAP
+/Generator/ScintGenerator/region   S2_PMT_LT
 /Generator/ScintGenerator/nphotons 1000000
 
 # geometry
@@ -33,8 +33,5 @@
 /nexus/persistency/start_id   9800
 /nexus/persistency/output_file NEXUS_OUTPUT
 
-/Geometry/Next100/el_gap_gen_disk_diam  1000 mm
-/Geometry/Next100/el_gap_gen_disk_y     0.0 mm
-/Geometry/Next100/el_gap_gen_disk_x     0.0 mm
-/Geometry/Next100/el_gap_gen_disk_zmin  0.0
-/Geometry/Next100/el_gap_gen_disk_zmax  1.0
+/Geometry/Next100/el_gap_slice_max 1
+/Geometry/Next100/el_gap_slice_min 0

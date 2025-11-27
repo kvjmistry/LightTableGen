@@ -8,7 +8,7 @@ echo "The JOBID number is: ${JOBID}"
 JOBNAME=$2
 echo "The JOBNAME number is: ${JOBNAME}" 
 
-echo "JOBID $1 running on `whoami`@`hostname`"
+echo "JOBID $JOBID running on `whoami`@`hostname`"
 start=`date +%s`
 
 # Setup nexus

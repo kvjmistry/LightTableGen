@@ -1,13 +1,14 @@
 # lt.sub
 
 # The job title here.
-jobname=NEXT100_PSF_LT
+jobname=NEXT100_S2_LT
+#jobname=NEXT100_S1_LT
+#jobname=NEXT100_PSF_LT
 CONFIG=$(jobname).config.mac
 INIT=$(jobname).init.mac
 SCRIPT=compress_files.py
-# SCRIPT=slim_files.py
 
-OSDF_LOCATION=osdf:///ospool/PROTECTED/krishan.mistry/
+OSDF_LOCATION=osdf:///ospool/ap40/data/krishan.mistry
 HOME_LOCATION=/home/krishan.mistry/code/LightTableGen/
 
 # newjobid = $(Process) + 100
@@ -33,12 +34,12 @@ transfer_output_remaps = "NEXUS_OUTPUT_slim.h5=$(OSDF_LOCATION)/job/$(jobname)/$
 +JobDurationCategory = "Medium"
 
 # Use a singularity image to submit the file. The image should be stored in the protected area of your workspace
-+SingularityImage = "$(OSDF_LOCATION)/containers/nexus_v5.sif"
+container_image = osdf:///ospool/ap40/data/krishan.mistry/containers/nexus_v6.sif
 
 
 # Tell HTCondor requirements (e.g., operating system) your job needs, 
 # what amount of compute resources each job will need on the computer where it runs.
-requirements = (OSGVO_OS_STRING == "RHEL 7")
+requirements = (Arch == "X86_64" && TARGET.GLIDEIN_ResourceName =!= "Lehigh - Hawk" && TARGET.GLIDEIN_ResourceName =!= "UA-LR-ITS-EP")
 request_cpus = 1
 request_memory = 4GB
 request_disk = 4GB
