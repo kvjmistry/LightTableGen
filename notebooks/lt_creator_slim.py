@@ -54,7 +54,7 @@ config = pd.DataFrame.from_dict(config)
 if signal_type == "S1":
     lt_dir = os.path.expandvars("../files/NEXT100_S1_LT/")
 else: 
-    lt_dir = os.path.expandvars("../files/next100/NEXT100_S2_LT/")
+    lt_dir = os.path.expandvars("../files/NEXT100_S2_LT/")
 
 lt_filenames = glob.glob(os.path.join(lt_dir, "*.h5"))
 lt_filenames = sorted(lt_filenames)
@@ -75,8 +75,9 @@ ybins_centre = xbins_centre
 zbins_centre = np.arange(zmin+zbw/2, zmax+zbw/2, zbw)
 
 
-LT  = pd.DataFrame()
-ERR = pd.DataFrame()
+LT_list  = []
+ERR_list = []
+
 
 for i, filename in enumerate(lt_filenames, 0):
     sys.stdout.write(f"Processing file {i}/{len(lt_filenames)} \r")
@@ -113,8 +114,12 @@ for i, filename in enumerate(lt_filenames, 0):
     pmt_response['charge'] = pmt_response['charge']/nphotons
     
     # Add the dataframe
-    LT  = pd.concat([LT , pmt_response])
-    ERR = pd.concat([ERR, pmt_response])
+    LT_list.append(pmt_response)
+    ERR_list.append(pmt_response)
+
+# Final concat — only done once
+LT  = pd.concat(LT_list,  ignore_index=True)
+ERR = pd.concat(ERR_list, ignore_index=True)
 
 print("Finished loading light-table")
 print("Aggregating light table...")
