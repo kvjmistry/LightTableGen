@@ -15,7 +15,7 @@ from invisible_cities.io.dst_io import df_writer
 
 
 # Configure the script here
-signal_type = "S2" # S1/S2
+signal_type = "S1" # S1/S2
 detector_db = "next100"
 pmt = "PmtR11410"
 Active_r = 1000 # active radius in mm
